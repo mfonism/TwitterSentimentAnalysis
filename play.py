@@ -2,6 +2,7 @@ import re
 
 from nltk.tokenize import WordPunctTokenizer
 import pandas as pd
+from tqdm import tqdm
 
 import utils
 
@@ -45,3 +46,19 @@ def data_cleaner(text):
         return (" ".join(tokens)).strip()
     except:
         return "NC"
+
+
+tqdm.pandas(desc="progress-bar")
+
+
+def post_process(data, n=1000000):
+    data = data.head(n)
+    data.SentimentText = data.SentimentText.progress_map(data_cleaner)
+    data.reset_index(inplace=True)
+    data.drop("index", inplace=True, axis=1)
+    return data
+
+
+def main():
+    train = ingest_train_filename("dataset.csv")
+    train = post_process(train)
