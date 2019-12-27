@@ -60,5 +60,15 @@ def post_process(data, n=1000000):
 
 
 def main():
+    # read and process data
     train = ingest_train_filename("dataset.csv")
     train = post_process(train)
+
+    clean_data = pd.DataFrame(train, columns=["SentimentText"])
+    clean_data["Sentiment"] = train.Sentiment
+
+    clean_data.to_csv("clean_data.csv", encoding="utf-8")
+
+    csv = "clean_data.csv"
+    data = pd.read_csv(csv, index_col=0)
+    data.head()
