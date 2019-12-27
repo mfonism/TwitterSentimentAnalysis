@@ -1,8 +1,10 @@
 import re
 
+import matplotlib.pyplot as plt
 from nltk.tokenize import WordPunctTokenizer
 import pandas as pd
 from tqdm import tqdm
+from wordcloud import WordCloud
 
 import utils
 
@@ -59,11 +61,52 @@ def post_process(data, n=1000000):
     return data
 
 
-def main():
-    # read and process data
+def make_train(filename="dataset.csv"):
     train = ingest_train_filename("dataset.csv")
     train = post_process(train)
 
+
+# style matplotlib for visualization
+plt.style.use("fivethirtyeight")
+
+
+def _visualize_neg(train):
+    neg_tweets = train[train.Sentiment == 0]
+    neg_string = []
+
+    for t in neg_tweets.SentimentText:
+        neg_string.append(t)
+
+    neg_string = pd.Series(neg_string).str.cat(sep=" ")
+    wordcloud = WordCloud(width=1600, height=800, max_font_size=200).generate(
+        neg_string
+    )
+    # generate figure
+    plt.figure(figsize=(12, 10))
+    plt.imshow(wordcloud, interpolation="bilinear")
+    plt.axis("off")
+    plt.show()
+
+
+def _visualize_pos(train):
+    pos_tweets = train[train.Sentiment == 1]
+    pos_string = []
+
+    for t in pos_tweets.SentimentText:
+        pos_string.append(t)
+
+    pos_string = pd.Series(pos_string).str.cat(sep=" ")
+    wordcloud = WordCloud(
+        width=1600, height=800, max_font_size=200, colormap="magma"
+    ).generate(pos_string)
+    # generate figure
+    plt.figure(figsize=(12, 10))
+    plt.imshow(wordcloud, interpolation="bilinear")
+    plt.axis("off")
+    plt.show()
+
+
+def save_to_csv(train):
     clean_data = pd.DataFrame(train, columns=["SentimentText"])
     clean_data["Sentiment"] = train.Sentiment
 
@@ -72,3 +115,11 @@ def main():
     csv = "clean_data.csv"
     data = pd.read_csv(csv, index_col=0)
     data.head()
+
+
+if __name__ == "__main__":
+    # train = make_train()
+    # save_to_csv(train)
+    # _visualize_pos(train)
+    # _visualize_neg(train)
+    pass
