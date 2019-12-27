@@ -62,8 +62,9 @@ def post_process(data, n=1000000):
 
 
 def make_train(filename="dataset.csv"):
-    train = ingest_train_filename("dataset.csv")
+    train = ingest_train_filename(filename)
     train = post_process(train)
+    return train
 
 
 # style matplotlib for visualization
@@ -118,8 +119,8 @@ def save_to_csv(train):
 
 
 if __name__ == "__main__":
-    # train = make_train()
-    # save_to_csv(train)
+    train = make_train()
+    save_to_csv(train)
+
     # _visualize_pos(train)
     # _visualize_neg(train)
-    pass
