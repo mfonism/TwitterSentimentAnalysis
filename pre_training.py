@@ -141,6 +141,17 @@ def _visualize_pos(train):
     plt.close()
 
 
+def _visualize_class_dist(train):
+    fig, ax = plt.subplots(figsize=(12, 10))
+    ax.set_xlim([-0.5, 1.5])
+    ax.set_xticks([0.170, 0.835])
+    ax.set_xticklabels(["Not Hate Speech", "Hate Speech"])
+    train.hist(bins=3, ax=ax, color="teal")
+    plt.title("Distribution of Classes")
+    plt.savefig(DATA_DIR / "distribution_of_classes.png", bbox_inches="tight")
+    plt.close()
+
+
 def save_to_csv(train):
     clean_data = pd.DataFrame(train, columns=["Tweet"])
     clean_data["Polarity"] = train.Polarity
