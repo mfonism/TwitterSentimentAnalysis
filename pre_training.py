@@ -119,7 +119,7 @@ def _visualize_neg(train):
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis("off")
     plt.savefig(DATA_DIR / "negative_cloud.png", bbox_inches="tight")
-    plt.show()
+    plt.close()
 
 
 def _visualize_pos(train):
@@ -138,7 +138,7 @@ def _visualize_pos(train):
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis("off")
     plt.savefig(DATA_DIR / "positive_cloud.png", bbox_inches="tight")
-    plt.show()
+    plt.close()
 
 
 def save_to_csv(train):
