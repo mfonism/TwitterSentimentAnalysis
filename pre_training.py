@@ -103,7 +103,7 @@ def make_train():
 plt.style.use("fivethirtyeight")
 
 
-def _visualize_neg(train):
+def create_wordcloud_neg(train):
     neg_tweets = train[train.Polarity == 0]
     neg_string = []
 
@@ -122,7 +122,7 @@ def _visualize_neg(train):
     plt.close()
 
 
-def _visualize_pos(train):
+def create_wordcloud_pos(train):
     pos_tweets = train[train.Polarity == 1]
     pos_string = []
 
@@ -173,7 +173,7 @@ def _get_trigrams_pos(train):
     return [item for sublist in list_of_pos_trigrams for item in sublist]
 
 
-def _visualize_class_dist(train):
+def create_class_dist(train):
     fig, ax = plt.subplots(figsize=(12, 10))
     ax.set_xlim([-0.5, 1.5])
     ax.set_xticks([0.170, 0.835])
@@ -198,6 +198,3 @@ if __name__ == "__main__":
     collate_parts()
     train = make_train()
     save_to_csv(train)
-
-    _visualize_pos(train)
-    _visualize_neg(train)
