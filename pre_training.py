@@ -82,9 +82,6 @@ def data_cleaner(text):
         return "NC"
 
 
-tqdm.pandas(desc="progress-bar")
-
-
 def post_process(data, n=1000000):
     data = data.head(n)
     data.Tweet = data.Tweet.progress_map(data_cleaner)
@@ -109,8 +106,15 @@ def save_to_csv(train):
     data.head()
 
 
-# style matplotlib for visualization
-plt.style.use("fivethirtyeight")
+def create_class_dist(train):
+    fig, ax = plt.subplots(figsize=(12, 10))
+    ax.set_xlim([-0.5, 1.5])
+    ax.set_xticks([0.170, 0.835])
+    ax.set_xticklabels(["Not Hate Speech", "Hate Speech"])
+    train.hist(bins=3, ax=ax, color="teal")
+    plt.title("Distribution of Classes")
+    plt.savefig(DATA_DIR / "distribution_of_classes.png", bbox_inches="tight")
+    plt.close()
 
 
 def create_wordcloud_neg(train):
@@ -183,18 +187,20 @@ def _get_trigrams_pos(train):
     return [item for sublist in list_of_pos_trigrams for item in sublist]
 
 
-def create_class_dist(train):
-    fig, ax = plt.subplots(figsize=(12, 10))
-    ax.set_xlim([-0.5, 1.5])
-    ax.set_xticks([0.170, 0.835])
-    ax.set_xticklabels(["Not Hate Speech", "Hate Speech"])
-    train.hist(bins=3, ax=ax, color="teal")
-    plt.title("Distribution of Classes")
-    plt.savefig(DATA_DIR / "distribution_of_classes.png", bbox_inches="tight")
-    plt.close()
-
-
 if __name__ == "__main__":
+    # create a progress indicator
+    tqdm.pandas(desc="progress-bar")
+    # style matplotlib for visualization
+    plt.style.use("fivethirtyeight")
+
+    # create train
     collate_parts()
     train = make_train()
     save_to_csv(train)
+
+    # create class distribution
+    create_class_dist(train)
+
+    # create word clouds
+    create_wordcloud_pos(train)
+    create_wordcloud_neg(train)
