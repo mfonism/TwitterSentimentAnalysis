@@ -119,16 +119,16 @@ def create_class_dist(train):
 
 
 def create_wordcloud_neg(train):
-    neg_tweets = train[train.Polarity == 0]
+    neg_tweets = train[train.Polarity == 1]
     neg_string = []
 
     for t in neg_tweets.Tweet:
         neg_string.append(t)
 
     neg_string = pd.Series(neg_string).str.cat(sep=" ")
-    wordcloud = WordCloud(width=1600, height=800, max_font_size=200).generate(
-        neg_string
-    )
+    wordcloud = WordCloud(
+        width=1600, height=800, max_font_size=200, colormap="magma"
+    ).generate(neg_string)
     # generate figure
     plt.figure(figsize=(12, 10))
     plt.imshow(wordcloud, interpolation="bilinear")
@@ -138,16 +138,16 @@ def create_wordcloud_neg(train):
 
 
 def create_wordcloud_pos(train):
-    pos_tweets = train[train.Polarity == 1]
+    pos_tweets = train[train.Polarity == 0]
     pos_string = []
 
     for t in pos_tweets.Tweet:
         pos_string.append(t)
 
     pos_string = pd.Series(pos_string).str.cat(sep=" ")
-    wordcloud = WordCloud(
-        width=1600, height=800, max_font_size=200, colormap="magma"
-    ).generate(pos_string)
+    wordcloud = WordCloud(width=1600, height=800, max_font_size=200).generate(
+        pos_string
+    )
     # generate figure
     plt.figure(figsize=(12, 10))
     plt.imshow(wordcloud, interpolation="bilinear")
