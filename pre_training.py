@@ -239,21 +239,26 @@ if __name__ == "__main__":
     plt.style.use("fivethirtyeight")
 
     # create train
+    print("Creating data train...")
     collate_parts()
     train = make_train()
     save_to_csv(train)
 
     # create class distribution
+    print("Creating class distribution...")
     create_class_dist(train)
 
     # create word clouds
+    print("Creating word cloud...")
     create_wordcloud_pos(train)
     create_wordcloud_neg(train)
 
     # create bigrams
+    print("Creating bigrams...")
     create_most_frequent_bigrams_pos(train)
     create_most_frequent_bigrams_neg(train)
 
     # create trigrams
+    print("Creating trigrams")
     create_most_frequent_trigrams_pos(train)
     create_most_frequent_trigrams_neg(train)
