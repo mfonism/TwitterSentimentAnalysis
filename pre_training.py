@@ -141,6 +141,22 @@ def _visualize_pos(train):
     plt.close()
 
 
+def _get_bigrams_neg(train):
+    neg_tweets = train[train.Polarity == 1]
+    list_of_neg_bigrams = neg_tweets.Tweet.map(
+        lambda tweet: list(nltk.ngrams(tweet.split(), 2))
+    ).to_list()
+    return [item for sublist in list_of_neg_bigrams for item in sublist]
+
+
+def _get_trigrams_neg(train):
+    neg_tweets = train[train.Polarity == 1]
+    list_of_neg_trigrams = neg_tweets.Tweet.map(
+        lambda tweet: list(nltk.ngrams(tweet.split(), 3))
+    ).to_list()
+    return [item for sublist in list_of_neg_trigrams for item in sublist]
+
+
 def _visualize_class_dist(train):
     fig, ax = plt.subplots(figsize=(12, 10))
     ax.set_xlim([-0.5, 1.5])
