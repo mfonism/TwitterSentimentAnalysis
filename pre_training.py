@@ -113,7 +113,9 @@ def create_class_dist(train):
     ax.set_xticks([0.170, 0.835])
     ax.set_xticklabels(["Not Hate Speech", "Hate Speech"])
     train.hist(bins=3, ax=ax, color="teal")
-    plt.title("Distribution of Classes")
+    plt.title("")
+    plt.ylabel("Frequency")
+    plt.xlabel("Class")
     plt.savefig(DATA_DIR / "distribution_of_classes.png", bbox_inches="tight")
     plt.close()
 
