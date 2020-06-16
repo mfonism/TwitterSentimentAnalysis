@@ -155,6 +155,28 @@ def create_wordcloud_pos(train):
     plt.close()
 
 
+def create_most_frequent_bigrams_neg(train, n=20):
+    fig, ax = plt.subplots(figsize=(12, 10))
+    bigrams_series = pd.Series(_get_bigrams_neg(train)).value_counts()[:n]
+    bigrams_series.sort_values().plot.barh(color="teal", width=0.9, ax=ax)
+    # plt.title(f"{n} Most Frequently Occuring Bigrams (Hate-speech Tweets)")
+    plt.ylabel("Bigram")
+    plt.xlabel("Frequency")
+    plt.savefig(DATA_DIR / "bigrams_neg.png", bbox_inches="tight")
+    plt.close()
+
+
+def create_most_frequent_bigrams_pos(train, n=20):
+    fig, ax = plt.subplots(figsize=(12, 10))
+    bigrams_series = pd.Series(_get_bigrams_pos(train)).value_counts()[:n]
+    bigrams_series.sort_values().plot.barh(color="teal", width=0.9, ax=ax)
+    # plt.title(f"{n} Most Frequently Occuring Bigrams (Non-hate-speech Tweets)")
+    plt.ylabel("Bigram")
+    plt.xlabel("Frequency")
+    plt.savefig(DATA_DIR / "bigrams_pos.png", bbox_inches="tight")
+    plt.close()
+
+
 def _get_bigrams_neg(train):
     neg_tweets = train[train.Polarity == 1]
     list_of_neg_bigrams = neg_tweets.Tweet.map(
@@ -204,3 +226,7 @@ if __name__ == "__main__":
     # create word clouds
     create_wordcloud_pos(train)
     create_wordcloud_neg(train)
+
+    # create bigrams
+    create_most_frequent_bigrams_pos(train)
+    create_most_frequent_bigrams_neg(train)
