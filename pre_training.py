@@ -99,6 +99,16 @@ def make_train():
     return train
 
 
+def save_to_csv(train):
+    clean_data = pd.DataFrame(train, columns=["Tweet"])
+    clean_data["Polarity"] = train.Polarity
+
+    clean_data.to_csv(CLEAN_DATA_FILE, encoding="utf-8")
+
+    data = pd.read_csv(CLEAN_DATA_FILE, index_col=0)
+    data.head()
+
+
 # style matplotlib for visualization
 plt.style.use("fivethirtyeight")
 
@@ -182,16 +192,6 @@ def create_class_dist(train):
     plt.title("Distribution of Classes")
     plt.savefig(DATA_DIR / "distribution_of_classes.png", bbox_inches="tight")
     plt.close()
-
-
-def save_to_csv(train):
-    clean_data = pd.DataFrame(train, columns=["Tweet"])
-    clean_data["Polarity"] = train.Polarity
-
-    clean_data.to_csv(CLEAN_DATA_FILE, encoding="utf-8")
-
-    data = pd.read_csv(CLEAN_DATA_FILE, index_col=0)
-    data.head()
 
 
 if __name__ == "__main__":
