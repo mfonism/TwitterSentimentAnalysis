@@ -3,12 +3,13 @@ import re
 
 import matplotlib.pyplot as plt
 import nltk
+from nltk.corpus import stopwords
 from nltk.tokenize import WordPunctTokenizer
 import pandas as pd
 from wordcloud import WordCloud
 
-import utils
 from config import CLEAN_DATA_FILE, DATA_DIR, PARTS_DIR, STITCHED_FILE
+from utils import text_utils
 
 
 def collate_parts():
@@ -32,8 +33,8 @@ def collate_parts():
                         continue
                     writer.writerow(
                         {
-                            "Tweet": utils.clean_string(row["b'message'"]),
-                            "Polarity": utils.clean_string(row["b'polarity'"]),
+                            "Tweet": text_utils.strip_byte(row["b'message'"]),
+                            "Polarity": text_utils.strip_byte(row["b'polarity'"]),
                         }
                     )
                     count += 1
@@ -41,28 +42,12 @@ def collate_parts():
         print(f"Written {count} rows.")
 
 
-def cleanse_tweet(text):
-    tokenizer = WordPunctTokenizer()
-    try:
-        # remove URLs
-        temp = re.sub(utils.combined_pat, "", text)
-        temp = re.sub(utils.www_pat, "", temp)
-        # remove HTML tags
-        temp = re.sub(utils.html_tag_pat, "", temp)
-        # change to lowercase and
-        # replace contracted negations with longer form
-        temp = temp.lower()
-        temp = utils.negations_pat.sub(lambda x: utils.negations_[x.group()], temp)
-        # keep only the letters
-        temp = re.sub("[^a-zA-Z]", " ", temp)
-        # remove randos
-        temp = re.sub(utils.rando_pat, "", temp)
-        # tokenize,
-        # then return a sentence of individual words strung together using spaces
-        tokens = tokenizer.tokenize(temp)
-        return (" ".join(tokens)).strip()
-    except:
-        return "NC"
+def remove_stopwords(tweet, is_clean=False):
+    if not is_clean:
+        tweet = text_utils.clean_tweet(tweet)
+    tokens = WordPunctTokenizer().tokenize(tweet)
+    english_stopwords = stopwords.words("english")
+    return " ".join(token for token in tokens if not token in english_stopwords).strip()
 
 
 def get_dataframe(csvfile=STITCHED_FILE):
@@ -73,7 +58,7 @@ def get_dataframe(csvfile=STITCHED_FILE):
 def process_dataframe(df):
     df.dropna(how="any", inplace=True)
     df.reset_index(drop=True, inplace=True)
-    df["Tweet"] = df["Tweet"].map(cleanse_tweet)
+    df["Tweet"] = df["Tweet"].map(remove_stopwords)
     df["Polarity"] = df["Polarity"].map(int)
     return df
 
