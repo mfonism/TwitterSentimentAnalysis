@@ -68,6 +68,21 @@ def save_dataframe(df, csvfile=CLEAN_DATA_FILE):
     df.to_csv(csvfile)
 
 
+def create_class_dist(df):
+    df_polarity = df["Polarity"]
+
+    fig = plt.figure(figsize=(16, 10))
+
+    ax = fig.gca()
+    ax.set_xlim([-0.1, 3])
+    ax.set_xticks([0.5, 1.5, 2.5])
+    ax.set_xticklabels(["Neutral Speech", "Hate Speech", "Offensive Speech"])
+    ax.hist(df_polarity, bins=[0, 1.0, 2.0, 2.9], width=0.9, color="green", alpha=0.5)
+
+    plt.savefig(DATA_DIR / "distribution_of_classes.png", bbox_inches="tight")
+    plt.close()
+
+
 def create_class_dist(train):
     fig, ax = plt.subplots(figsize=(12, 10))
     ax.set_xlim([-0.5, 1.5])
@@ -205,7 +220,19 @@ if __name__ == "__main__":
     df = get_dataframe()
     df = process_dataframe(df)
     save_dataframe(df)
-    print("Done!")
+
+    # categorize data
+    print()
+    print(
+        "Categorizing data according to polarity -- 0 == neutral, 1 == hate, 2 == offensive..."
+    )
+    df_neutral = df[df["Polarity"] == 0]
+    df_hate = df[df["Polarity"] == 1]
+    df_offensive = df[df["Polarity"] == 2]
+
+    print(f"Num neut: {df_neutral.shape[0]:>5}")
+    print(f"Num hate: {df_hate.shape[0]:>5}")
+    print(f"Num offe: {df_offensive.shape[0]:>5}")
 
     # create class distribution
     print()
