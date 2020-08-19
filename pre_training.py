@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import nltk
 from nltk.tokenize import WordPunctTokenizer
 import pandas as pd
-from tqdm import tqdm
 from wordcloud import WordCloud
 
 import utils
@@ -42,24 +41,7 @@ def collate_parts():
         print(f"Written {count} rows.")
 
 
-def ingest_collated():
-    # read csv
-    data = pd.read_csv(STITCHED_FILE)
-    # filter out incomplete rows
-    data = data[data.Tweet.isnull() == False]
-    data = data[data.Polarity.isnull() == False]
-    # convert the polarity column data to integers
-    data.Polarity = data.Polarity.map(int)
-    # data was filtered, so rows were probaby
-    # removed along with their respective indices
-    # recalculate the indices, shifting rows upwards
-    # so that there are no jumps in indices
-    data.reset_index(inplace=True)
-    data.drop("index", axis=1, inplace=True)
-    return data
-
-
-def data_cleaner(text):
+def cleanse_tweet(text):
     tokenizer = WordPunctTokenizer()
     try:
         # remove URLs
@@ -83,28 +65,22 @@ def data_cleaner(text):
         return "NC"
 
 
-def post_process(data, n=1000000):
-    data = data.head(n)
-    data.Tweet = data.Tweet.progress_map(data_cleaner)
-    data.reset_index(inplace=True)
-    data.drop("index", inplace=True, axis=1)
-    return data
+def get_dataframe(csvfile=STITCHED_FILE):
+    """Return dataframe created from input csv file."""
+    return pd.read_csv(csvfile)
 
 
-def make_train():
-    train = ingest_collated()
-    train = post_process(train)
-    return train
+def process_dataframe(df):
+    df.dropna(how="any", inplace=True)
+    df.reset_index(drop=True, inplace=True)
+    df["Tweet"] = df["Tweet"].map(cleanse_tweet)
+    df["Polarity"] = df["Polarity"].map(int)
+    return df
 
 
-def save_to_csv(train):
-    clean_data = pd.DataFrame(train, columns=["Tweet"])
-    clean_data["Polarity"] = train.Polarity
-
-    clean_data.to_csv(CLEAN_DATA_FILE, encoding="utf-8")
-
-    data = pd.read_csv(CLEAN_DATA_FILE, index_col=0)
-    data.head()
+def save_dataframe(df, csvfile=CLEAN_DATA_FILE):
+    """Save dataframe to input csv file."""
+    df.to_csv(csvfile)
 
 
 def create_class_dist(train):
@@ -235,32 +211,36 @@ def _get_trigrams_pos(train):
 
 
 if __name__ == "__main__":
-    # create a progress indicator
-    tqdm.pandas(desc="progress-bar")
     # style matplotlib for visualization
     plt.style.use("fivethirtyeight")
 
-    # create train
-    print("Creating data train...")
-    collate_parts()
-    train = make_train()
-    save_to_csv(train)
+    # process data
+    print()
+    print("Processing data...")
+    df = get_dataframe()
+    df = process_dataframe(df)
+    save_dataframe(df)
+    print("Done!")
 
     # create class distribution
+    print()
     print("Creating class distribution...")
-    create_class_dist(train)
+    create_class_dist(df)
 
     # create word clouds
+    print()
     print("Creating word cloud...")
-    create_wordcloud_pos(train)
-    create_wordcloud_neg(train)
+    create_wordcloud_pos(df)
+    create_wordcloud_neg(df)
 
     # create bigrams
+    print()
     print("Creating bigrams...")
-    create_most_frequent_bigrams_pos(train)
-    create_most_frequent_bigrams_neg(train)
+    create_most_frequent_bigrams_pos(df)
+    create_most_frequent_bigrams_neg(df)
 
     # create trigrams
+    print()
     print("Creating trigrams")
-    create_most_frequent_trigrams_pos(train)
-    create_most_frequent_trigrams_neg(train)
+    create_most_frequent_trigrams_pos(df)
+    create_most_frequent_trigrams_neg(df)
