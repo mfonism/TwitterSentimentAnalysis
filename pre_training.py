@@ -77,7 +77,7 @@ def create_class_dist(df):
     ax.set_xlim([-0.1, 3])
     ax.set_xticks([0.5, 1.5, 2.5])
     ax.set_xticklabels(["Neutral Speech", "Hate Speech", "Offensive Speech"])
-    ax.hist(df_polarity, bins=[0, 1.0, 2.0, 2.9], width=0.9, color="green", alpha=0.5)
+    ax.hist(df_polarity, bins=[0, 1.0, 2.0, 2.9], width=0.9, color="teal")
 
     plt.savefig(DATA_DIR / "distribution_of_classes.png", bbox_inches="tight")
     plt.close()
@@ -100,7 +100,7 @@ def create_wordcloud(df, outfile, colormap=None):
 def create_modal_bigrams(df, outfile, n=20):
     fig, ax = plt.subplots(figsize=(16, 10))
     bigram_series = pd.Series(_get_bigrams(df)).value_counts()[:n]
-    bigram_series.sort_values().plot.barh(color="green", alpha=0.5, width=1, ax=ax)
+    bigram_series.sort_values().plot.barh(color="teal", width=0.9, ax=ax)
     plt.savefig(outfile, bbox_inches="tight")
     plt.close()
 
@@ -108,7 +108,7 @@ def create_modal_bigrams(df, outfile, n=20):
 def create_modal_trigrams(df, outfile, n=20):
     fig, ax = plt.subplots(figsize=(16, 10))
     bigram_series = pd.Series(_get_trigrams(df)).value_counts()[:n]
-    bigram_series.sort_values().plot.barh(color="green", alpha=0.5, width=1, ax=ax)
+    bigram_series.sort_values().plot.barh(color="teal", width=0.9, ax=ax)
     plt.savefig(outfile, bbox_inches="tight")
     plt.close()
 
@@ -147,9 +147,9 @@ if __name__ == "__main__":
     df_hate = df[df["Polarity"] == 1]
     df_offensive = df[df["Polarity"] == 2]
 
-    print(f"Num neut: {df_neutral.shape[0]:>5}")
-    print(f"Num hate: {df_hate.shape[0]:>5}")
-    print(f"Num offe: {df_offensive.shape[0]:>5}")
+    print(f"Num neutral:   {df_neutral.shape[0]:>5}")
+    print(f"Num hate:      {df_hate.shape[0]:>5}")
+    print(f"Num offensive: {df_offensive.shape[0]:>5}")
 
     # create class distribution
     print()
