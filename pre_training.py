@@ -97,80 +97,34 @@ def create_wordcloud(df, outfile, colormap=None):
     plt.close()
 
 
-def create_most_frequent_bigrams_neg(train, n=20):
-    fig, ax = plt.subplots(figsize=(12, 10))
-    bigrams_series = pd.Series(_get_bigrams_neg(train)).value_counts()[:n]
-    bigrams_series.sort_values().plot.barh(color="teal", width=0.9, ax=ax)
-    # plt.title(f"{n} Most Frequently Occuring Bigrams (Hate-speech Tweets)")
-    plt.ylabel("Bigram")
-    plt.xlabel("Frequency")
-    plt.savefig(DATA_DIR / "bigrams_neg.png", bbox_inches="tight")
+def create_modal_bigrams(df, outfile, n=20):
+    fig, ax = plt.subplots(figsize=(16, 10))
+    bigram_series = pd.Series(_get_bigrams(df)).value_counts()[:n]
+    bigram_series.sort_values().plot.barh(color="green", alpha=0.5, width=1, ax=ax)
+    plt.savefig(outfile, bbox_inches="tight")
     plt.close()
 
 
-def create_most_frequent_bigrams_pos(train, n=20):
-    fig, ax = plt.subplots(figsize=(12, 10))
-    bigrams_series = pd.Series(_get_bigrams_pos(train)).value_counts()[:n]
-    bigrams_series.sort_values().plot.barh(color="teal", width=0.9, ax=ax)
-    # plt.title(f"{n} Most Frequently Occuring Bigrams (Non-hate-speech Tweets)")
-    plt.ylabel("Bigram")
-    plt.xlabel("Frequency")
-    plt.savefig(DATA_DIR / "bigrams_pos.png", bbox_inches="tight")
+def create_modal_trigrams(df, outfile, n=20):
+    fig, ax = plt.subplots(figsize=(16, 10))
+    bigram_series = pd.Series(_get_trigrams(df)).value_counts()[:n]
+    bigram_series.sort_values().plot.barh(color="green", alpha=0.5, width=1, ax=ax)
+    plt.savefig(outfile, bbox_inches="tight")
     plt.close()
 
 
-def create_most_frequent_trigrams_neg(train, n=20):
-    fig, ax = plt.subplots(figsize=(12, 10))
-    trigrams_series = pd.Series(_get_trigrams_neg(train)).value_counts()[:n]
-    trigrams_series.sort_values().plot.barh(color="teal", width=0.9, ax=ax)
-    # plt.title(f"{n} Most Frequently Occuring Trigrams (Hate-speech Tweets)")
-    plt.ylabel("Trigram")
-    plt.xlabel("Frequency")
-    plt.savefig(DATA_DIR / "trigrams_neg.png", bbox_inches="tight")
-    plt.close()
+def _get_bigrams(df):
+    list_of_bigrams = (
+        df["Tweet"].map(lambda tweet: list(nltk.ngrams(tweet.split(), 2))).to_list()
+    )
+    return [item for sublist in list_of_bigrams for item in sublist]
 
 
-def create_most_frequent_trigrams_pos(train, n=20):
-    fig, ax = plt.subplots(figsize=(12, 10))
-    trigrams_series = pd.Series(_get_trigrams_pos(train)).value_counts()[:n]
-    trigrams_series.sort_values().plot.barh(color="teal", width=0.9, ax=ax)
-    # plt.title(f"{n} Most Frequently Occuring Trigrams (Non-hate-speech Tweets)")
-    plt.ylabel("Trigram")
-    plt.xlabel("Frequency")
-    plt.savefig(DATA_DIR / "trigrams_pos.png", bbox_inches="tight")
-    plt.close()
-
-
-def _get_bigrams_neg(train):
-    neg_tweets = train[train.Polarity == 1]
-    list_of_neg_bigrams = neg_tweets.Tweet.map(
-        lambda tweet: list(nltk.ngrams(tweet.split(), 2))
-    ).to_list()
-    return [item for sublist in list_of_neg_bigrams for item in sublist]
-
-
-def _get_trigrams_neg(train):
-    neg_tweets = train[train.Polarity == 1]
-    list_of_neg_trigrams = neg_tweets.Tweet.map(
-        lambda tweet: list(nltk.ngrams(tweet.split(), 3))
-    ).to_list()
-    return [item for sublist in list_of_neg_trigrams for item in sublist]
-
-
-def _get_bigrams_pos(train):
-    pos_tweets = train[train.Polarity == 0]
-    list_of_pos_bigrams = pos_tweets.Tweet.map(
-        lambda tweet: list(nltk.ngrams(tweet.split(), 2))
-    ).to_list()
-    return [item for sublist in list_of_pos_bigrams for item in sublist]
-
-
-def _get_trigrams_pos(train):
-    pos_tweets = train[train.Polarity == 0]
-    list_of_pos_trigrams = pos_tweets.Tweet.map(
-        lambda tweet: list(nltk.ngrams(tweet.split(), 3))
-    ).to_list()
-    return [item for sublist in list_of_pos_trigrams for item in sublist]
+def _get_trigrams(df):
+    list_of_trigrams = (
+        df["Tweet"].map(lambda tweet: list(nltk.ngrams(tweet.split(), 3))).to_list()
+    )
+    return [item for sublist in list_of_trigrams for item in sublist]
 
 
 if __name__ == "__main__":
@@ -210,23 +164,37 @@ if __name__ == "__main__":
     )
     print("Creating hate word cloud...")
     create_wordcloud(
-        df_hate, outfile=(DATA_DIR / "wordcloud--hate.png"), colormap="OrRd_r"
+        df_hate, outfile=(DATA_DIR / "wordcloud--hate.png"), colormap="Reds_r"
     )
-    print("Creating neutral word cloud...")
+    print("Creating offensive word cloud...")
     create_wordcloud(
         df_offensive,
         outfile=(DATA_DIR / "wordcloud--offensive.png"),
-        colormap="Reds_r",
+        colormap="OrRd_r",
     )
 
     # create bigrams
     print()
-    print("Creating bigrams...")
-    create_most_frequent_bigrams_pos(df)
-    create_most_frequent_bigrams_neg(df)
+
+    print("Creating neutral bigrams...")
+    create_modal_bigrams(df_neutral, outfile=(DATA_DIR / "bigrams--neutral.png"))
+
+    print("Creating hate bigrams...")
+    create_modal_bigrams(df_hate, outfile=(DATA_DIR / "bigrams--hate.png"))
+
+    print("Creating offensive bigrams...")
+    create_modal_bigrams(df_offensive, outfile=(DATA_DIR / "bigrams--offensive.png"))
 
     # create trigrams
     print()
-    print("Creating trigrams")
-    create_most_frequent_trigrams_pos(df)
-    create_most_frequent_trigrams_neg(df)
+    print("Creating neutral trigrams...")
+    create_modal_trigrams(df_neutral, outfile=(DATA_DIR / "trigrams--neutral.png"))
+
+    print("Creating hate trigrams...")
+    create_modal_trigrams(df_hate, outfile=(DATA_DIR / "trigrams--hate.png"))
+
+    print("Creating offensive trigrams...")
+    create_modal_trigrams(df_offensive, outfile=(DATA_DIR / "trigrams--offensive.png"))
+
+    print()
+    print("DONE!")
