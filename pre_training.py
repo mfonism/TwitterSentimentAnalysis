@@ -83,54 +83,17 @@ def create_class_dist(df):
     plt.close()
 
 
-def create_class_dist(train):
-    fig, ax = plt.subplots(figsize=(12, 10))
-    ax.set_xlim([-0.5, 1.5])
-    ax.set_xticks([0.170, 0.835])
-    ax.set_xticklabels(["Not Hate Speech", "Hate Speech"])
-    train.hist(bins=3, ax=ax, color="teal")
-    plt.title("")
-    plt.ylabel("Frequency")
-    plt.xlabel("Class")
-    plt.savefig(DATA_DIR / "distribution_of_classes.png", bbox_inches="tight")
-    plt.close()
+def create_wordcloud(df, outfile, colormap=None):
+    concatenated_tweets = df["Tweet"].str.cat(sep=" ")
 
-
-def create_wordcloud_neg(train):
-    neg_tweets = train[train.Polarity == 1]
-    neg_string = []
-
-    for t in neg_tweets.Tweet:
-        neg_string.append(t)
-
-    neg_string = pd.Series(neg_string).str.cat(sep=" ")
     wordcloud = WordCloud(
-        width=1600, height=800, max_font_size=200, colormap="magma"
-    ).generate(neg_string)
-    # generate figure
+        width=1600, height=1000, max_font_size=256, colormap=colormap
+    ).generate(concatenated_tweets)
+
     plt.figure(figsize=(12, 10))
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis("off")
-    plt.savefig(DATA_DIR / "negative_cloud.png", bbox_inches="tight")
-    plt.close()
-
-
-def create_wordcloud_pos(train):
-    pos_tweets = train[train.Polarity == 0]
-    pos_string = []
-
-    for t in pos_tweets.Tweet:
-        pos_string.append(t)
-
-    pos_string = pd.Series(pos_string).str.cat(sep=" ")
-    wordcloud = WordCloud(width=1600, height=800, max_font_size=200).generate(
-        pos_string
-    )
-    # generate figure
-    plt.figure(figsize=(12, 10))
-    plt.imshow(wordcloud, interpolation="bilinear")
-    plt.axis("off")
-    plt.savefig(DATA_DIR / "positive_cloud.png", bbox_inches="tight")
+    plt.savefig(outfile, bbox_inches="tight")
     plt.close()
 
 
@@ -241,9 +204,20 @@ if __name__ == "__main__":
 
     # create word clouds
     print()
-    print("Creating word cloud...")
-    create_wordcloud_pos(df)
-    create_wordcloud_neg(df)
+    print("Creating neutral word cloud...")
+    create_wordcloud(
+        df_neutral, outfile=(DATA_DIR / "wordcloud--neutral.png"), colormap="Purples"
+    )
+    print("Creating hate word cloud...")
+    create_wordcloud(
+        df_hate, outfile=(DATA_DIR / "wordcloud--hate.png"), colormap="OrRd_r"
+    )
+    print("Creating neutral word cloud...")
+    create_wordcloud(
+        df_offensive,
+        outfile=(DATA_DIR / "wordcloud--offensive.png"),
+        colormap="Reds_r",
+    )
 
     # create bigrams
     print()
