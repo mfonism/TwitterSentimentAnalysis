@@ -1,5 +1,4 @@
 import csv
-import re
 
 import matplotlib.pyplot as plt
 import nltk
@@ -74,10 +73,10 @@ def create_class_dist(df):
     fig = plt.figure(figsize=(16, 10))
 
     ax = fig.gca()
-    ax.set_xlim([-0.1, 3])
-    ax.set_xticks([0.5, 1.5, 2.5])
-    ax.set_xticklabels(["Neutral Speech", "Hate Speech", "Offensive Speech"])
-    ax.hist(df_polarity, bins=[0, 1.0, 2.0, 2.9], width=0.9, color="teal")
+    ax.set_xlim([-0.1, 2])
+    ax.set_xticks([0.45, 1.45])
+    ax.set_xticklabels(["Non Hate Speech", "Hate Speech"])
+    ax.hist(df_polarity, bins=[0, 1.0, 1.9], width=0.9, color="teal")
 
     plt.savefig(DATA_DIR / "distribution_of_classes.png", bbox_inches="tight")
     plt.close()
@@ -141,15 +140,13 @@ if __name__ == "__main__":
     # categorize data
     print()
     print(
-        "Categorizing data according to polarity -- 0 == neutral, 1 == hate, 2 == offensive..."
+        "Categorizing data according to polarity -- 0 == non hate speech, 1 == hate speech..."
     )
-    df_neutral = df[df["Polarity"] == 0]
+    df_nonhate = df[df["Polarity"] == 0]
     df_hate = df[df["Polarity"] == 1]
-    df_offensive = df[df["Polarity"] == 2]
 
-    print(f"Num neutral:   {df_neutral.shape[0]:>5}")
-    print(f"Num hate:      {df_hate.shape[0]:>5}")
-    print(f"Num offensive: {df_offensive.shape[0]:>5}")
+    print(f"Num non hate: {df_nonhate.shape[0]:>5}")
+    print(f"Num hate:     {df_hate.shape[0]:>5}")
 
     # create class distribution
     print()
@@ -157,44 +154,31 @@ if __name__ == "__main__":
     create_class_dist(df)
 
     # create word clouds
-    print()
-    print("Creating neutral word cloud...")
+    print("Creating non-hate wordcloud...")
     create_wordcloud(
-        df_neutral, outfile=(DATA_DIR / "wordcloud--neutral.png"), colormap="Purples"
+        df_nonhate, outfile=(DATA_DIR / "wordcloud--non-hate.png"), colormap="Purples"
     )
-    print("Creating hate word cloud...")
+    print("Creating hate wordcloud...")
     create_wordcloud(
         df_hate, outfile=(DATA_DIR / "wordcloud--hate.png"), colormap="Reds_r"
-    )
-    print("Creating offensive word cloud...")
-    create_wordcloud(
-        df_offensive,
-        outfile=(DATA_DIR / "wordcloud--offensive.png"),
-        colormap="OrRd_r",
     )
 
     # create bigrams
     print()
 
-    print("Creating neutral bigrams...")
-    create_modal_bigrams(df_neutral, outfile=(DATA_DIR / "bigrams--neutral.png"))
+    print("Creating non-hate bigrams...")
+    create_modal_bigrams(df_nonhate, outfile=(DATA_DIR / "bigrams--non-hate.png"))
 
     print("Creating hate bigrams...")
     create_modal_bigrams(df_hate, outfile=(DATA_DIR / "bigrams--hate.png"))
 
-    print("Creating offensive bigrams...")
-    create_modal_bigrams(df_offensive, outfile=(DATA_DIR / "bigrams--offensive.png"))
-
     # create trigrams
     print()
-    print("Creating neutral trigrams...")
-    create_modal_trigrams(df_neutral, outfile=(DATA_DIR / "trigrams--neutral.png"))
+    print("Creating non-hate trigrams...")
+    create_modal_trigrams(df_nonhate, outfile=(DATA_DIR / "trigrams--non-hate.png"))
 
     print("Creating hate trigrams...")
     create_modal_trigrams(df_hate, outfile=(DATA_DIR / "trigrams--hate.png"))
-
-    print("Creating offensive trigrams...")
-    create_modal_trigrams(df_offensive, outfile=(DATA_DIR / "trigrams--offensive.png"))
 
     print()
     print("DONE!")
