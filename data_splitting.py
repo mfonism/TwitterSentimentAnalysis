@@ -11,27 +11,16 @@ from config import (
 )
 
 df = pd.read_csv(CLEAN_DATA_FILE)
-df_nonhate = df[df["Polarity"] == 0].dropna(how="any")
-df_hate = df[df["Polarity"] == 1].dropna(how="any")
+df.dropna(how="any", inplace=True)
 
-# df_nonhate has 1527 rows
-# df_hate has 4797 rows
-# downsample df_nonhate to 4797 rows
-# cache the leftover data for testing purpose
-df_nonhate, df_nonhate_leftover = (
-    df_nonhate.head(len(df_hate)),
-    df_nonhate.tail(len(df_nonhate) - len(df_hate)),
-)
-df_train_test = df_nonhate.append(df_hate).sample(frac=1)
-
-# df_train_test has 9594 rows in total
+# df has 20071 rows in total (4794 for hate speech, 15247 for nonhate speech)
 # split it into train (80%) and test (20%) dataframes
-X, y = df_train_test["Tweet"], df_train_test["Polarity"]
+X, y = df["Tweet"], df["Polarity"]
 train_X, test_X, train_y, test_y = train_test_split(
     X, y, test_size=0.2, random_state=RANDOM_STATE
 )
-# train_X and train_y have 7675 rows
-# test_X and test_y have 1919 rows
+# train_X and train_y have 16056 rows
+# test_X and test_y have 4015 rows
 
 if __name__ == "__main__":
     train_X.to_csv(TRAIN_X_FILE)
