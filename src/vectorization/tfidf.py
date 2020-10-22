@@ -5,7 +5,7 @@ from sklearn.metrics import f1_score
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.svm import SVC
 
-from .data_splitting import train_X, train_y, test_X, test_y
+from vectorization.data_splitting import train_X, train_y, test_X, test_y
 
 vectorizer = TfidfVectorizer(ngram_range=(1, 4)).fit(train_X)
 transformed_train_X = vectorizer.transform(train_X)
@@ -49,8 +49,7 @@ def get_SVC_score():
     return f1_score(test_y, predictionsSVC)
 
 
-if __name__ == "__main__":
-
+def run():
     print()
     print("Fetching F1 Scores for different Algorithms...")
 

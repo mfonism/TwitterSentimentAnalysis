@@ -46,7 +46,7 @@ def remove_stopwords(tweet, is_clean=False):
         tweet = text_utils.clean_tweet(tweet)
     tokens = WordPunctTokenizer().tokenize(tweet)
     english_stopwords = stopwords.words("english")
-    return " ".join(token for token in tokens if not token in english_stopwords).strip()
+    return " ".join(token for token in tokens if token not in english_stopwords).strip()
 
 
 def get_dataframe(csvfile=STITCHED_FILE):
@@ -126,7 +126,7 @@ def _get_trigrams(df):
     return [item for sublist in list_of_trigrams for item in sublist]
 
 
-if __name__ == "__main__":
+def run():
     # style matplotlib for visualization
     plt.style.use("fivethirtyeight")
 
@@ -140,7 +140,8 @@ if __name__ == "__main__":
     # categorize data
     print()
     print(
-        "Categorizing data according to polarity -- 0 == non hate speech, 1 == hate speech..."
+        "Categorizing data according to polarity --"
+        " 0 == non hate speech, 1 == hate speech..."
     )
     df_nonhate = df[df["Polarity"] == 0]
     df_hate = df[df["Polarity"] == 1]
