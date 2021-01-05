@@ -53,7 +53,7 @@ def run():
         train_X_seq,
         train_y,
         validation_data=(test_X_seq, test_y),
-        epochs=5,
+        epochs=10,
         batch_size=32,
         verbose=2,
     )

@@ -31,7 +31,7 @@ def run():
     from ..config import MODELS_DIR
 
     model_lstm.fit(
-        train_X_seq, train_y, epochs=7, batch_size=32, verbose=2,
+        train_X_seq, train_y, epochs=10, batch_size=32, verbose=2,
     )
 
     # save the untrained model to JSON
