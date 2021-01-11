@@ -1,3 +1,5 @@
+import sklearn
+
 from keras.layers import Dense, LSTM, SpatialDropout1D
 from keras.layers.embeddings import Embedding
 from keras.models import Sequential
@@ -42,10 +44,13 @@ def run():
     h5_file = MODELS_DIR / "model_lstm_trained.h5"
     model_lstm.save(h5_file, save_format="h5")
 
+    prediction = model_lstm.predict(test_X_seq)
     score, accuracy = model_lstm.evaluate(test_X_seq, test_y, verbose=2, batch_size=32)
+    f1_score = sklearn.metrics.f1_score(test_y, prediction.round())
 
     print(f"Score:    {score:.2f}")
     print(f"Accuracy: {accuracy:.2f}")
+    print(f"F1 Score: {f1_score:.2f}")
 
 
 if __name__ == "__main__":
